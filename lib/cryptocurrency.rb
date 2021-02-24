@@ -13,4 +13,8 @@ class FINDCRYPTO::Cryptocurrency
         @@all
     end
 
+    def get_name
+        self.name
+    end
+
 end

@@ -11,8 +11,8 @@ class FINDCRYPTO::API
         request = URI.parse(@url_top_20)
         response = Net::HTTP.get_response(request)
         crypto_hash = JSON.parse(response.body)
-        binding.pry
-        #self.create_cryptocurrency_objects(crypto_object)
+        #binding.pry
+        self.create_cryptocurrency_objects(crypto_hash)
     end 
 
     def create_cryptocurrency_objects(crypto_hash)
@@ -22,4 +22,4 @@ class FINDCRYPTO::API
     end
 end
 
-
+# FINDCRYPTO::Cryptocurrency.all.first.name == "Bitcoin"

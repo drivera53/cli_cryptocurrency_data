@@ -1,7 +1,10 @@
 class FINDCRYPTO::CLI
+    def initialize
+        FINDCRYPTO::API.new.get_top_20_cryptocurrencies
+    end
+
     def run
         greeting
-        #FINDCRYPTO::API.new
     end
 
     def greeting
