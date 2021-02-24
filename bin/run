@@ -2,4 +2,5 @@
 
 require_relative '../config/environment'
 
-FINDCRYPTO::CLI.new
+FINDCRYPTO::API.new.get_top_20_cryptocurrencies
+
