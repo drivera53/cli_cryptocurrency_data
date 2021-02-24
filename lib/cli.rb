@@ -1,0 +1,3 @@
+class FINDCRYPTO::CLI
+    puts "CLI FILE CONNECTED"
+end

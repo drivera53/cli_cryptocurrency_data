@@ -1,0 +1,2 @@
+class FINDCRYPTO::API
+end
