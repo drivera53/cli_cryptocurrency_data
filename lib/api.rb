@@ -20,6 +20,30 @@ class FINDCRYPTO::API
             FINDCRYPTO::Cryptocurrency.new(crypto_object)
         end
     end
+
+    def get_data_from_new_crypto(crypto_id)
+        url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=#{crypto_id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h"
+        request = URI.parse(url)
+        response = Net::HTTP.get_response(request)
+        crypto_hash = JSON.parse(response.body)
+        self.create_cryptocurrency_objects(crypto_hash)
+    end
+
+    def get_all_cryptocurrencies_names_and_ids
+        url = "https://api.coingecko.com/api/v3/coins/list?include_platform=false"
+        request = URI.parse(url)
+        response = Net::HTTP.get_response(request)
+        crypto_hash = JSON.parse(response.body)
+        self.create_cryptocurrency_names_and_ids_objects(crypto_hash)
+    end
+
+    def create_cryptocurrency_names_and_ids_objects(crypto_hash)
+        crypto_hash.each do |crypto_object|
+            FINDCRYPTO::Cryptocurrency_lookup.new(crypto_object)
+        end
+    end
+
+
 end
 
 # FINDCRYPTO::Cryptocurrency.all.first.name == "Bitcoin"
