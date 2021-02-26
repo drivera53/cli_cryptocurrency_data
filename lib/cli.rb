@@ -33,10 +33,17 @@ class FINDCRYPTO::CLI
             menu.choice "Yes, but let me search for a different cryptocurrency"
             menu.choice "Nope! Please exit now."
         end
-        if input.to_i > 0 && input.to_i <= FINDCRYPTO::Cryptocurrency.all.count
-            number = input.to_i
-            display_crypto(number)
-            display_cryto_footer_menu
+
+        if input == 'Yes, let me choose a cryptocurrency from the list above'
+            input_number = @prompt.ask("Type its number please:", default: "e.g. 1 for Bitcoin")
+        # if input.to_i > 0 && input.to_i <= FINDCRYPTO::Cryptocurrency.all.count
+            number = input_number.to_i
+            if number > FINDCRYPTO::Cryptocurrency.all.count || number == 0
+                invalid_input_try_again
+            else
+                display_crypto(number)
+                display_cryto_footer_menu
+            end
 
         elsif input == 'Yes, but let me search for a different cryptocurrency'
             puts "-----------------------$------------------------"
@@ -144,9 +151,12 @@ class FINDCRYPTO::CLI
         puts "Trading Volume 24 Hours: $#{crypto.total_volume}"
         puts "Market Cap: $#{crypto.market_cap}       Market Cap Rank: ##{crypto.market_cap_rank}"
         puts "Circulating Supply: $#{crypto.circulating_supply}"
-        puts "Logo link: #{crypto.image}"
+        #puts "Logo link: #{crypto.image}"
         puts "-----------------------$------------------------"
-
+        puts "Showing you #{crypto.name}'s logo in your browser!"
+        puts "It's not Malware don't get scared"
+        sleep(1)
+        Launchy.open(crypto.image)
     end
 
     def display_top_20_cryptocurrencies

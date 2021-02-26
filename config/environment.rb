@@ -3,6 +3,7 @@ require 'net/http'
 require 'open-uri'
 require 'json'
 require 'tty-prompt'
+require 'launchy'
 
 require_relative '../lib/modules/findcrypto.rb'
 require_relative '../lib/api'
