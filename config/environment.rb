@@ -2,6 +2,7 @@ require 'pry'
 require 'net/http'
 require 'open-uri'
 require 'json'
+require 'tty-prompt'
 
 require_relative '../lib/modules/findcrypto.rb'
 require_relative '../lib/api'

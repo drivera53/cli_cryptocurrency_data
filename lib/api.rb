@@ -1,6 +1,3 @@
-#require_relative "../lib/modules/findcrypto"
-#require 'pry'
-
 class FINDCRYPTO::API
 
     def initialize
