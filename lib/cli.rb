@@ -7,6 +7,7 @@ class FINDCRYPTO::CLI
         puts "\n"
         FINDCRYPTO::API.new.get_top_20_cryptocurrencies 
         FINDCRYPTO::API.new.get_all_cryptocurrencies_names_and_ids
+        @prompt = TTY::Prompt.new(help_color: :cyan)
     end
 
     def run
@@ -26,32 +27,40 @@ class FINDCRYPTO::CLI
         puts "  Top 20 Cryptocurrency Prices by Market Cap:   "
         puts "-----------------------$------------------------"
         display_top_20_cryptocurrencies
-        input = gets.strip
+        puts "-----------------------$------------------------"
+        input = @prompt.select("Would you like more information?") do |menu|
+            menu.choice "Yes, let me choose a cryptocurrency from the list above"
+            menu.choice "Yes, but let me search for a different cryptocurrency"
+            menu.choice "Nope! Please exit now."
+        end
         if input.to_i > 0 && input.to_i <= FINDCRYPTO::Cryptocurrency.all.count
             number = input.to_i
             display_crypto(number)
             display_cryto_footer_menu
 
-        elsif input.downcase == 'search more'
-            display_search_option
-            display_search_input = gets.strip
-            if display_search_input.downcase == 'show full list'
+        elsif input == 'Yes, but let me search for a different cryptocurrency'
+            puts "-----------------------$------------------------"
+            puts "Can't find your favorite crypto?"
+            display_search_input = @prompt.select("Choose an option:") do |menu|
+                menu.choice "Search a cryptocurrency"
+                menu.choice "Show full list of cryptocurrencies"
+                menu.choice "Go back"
+                menu.choice "Exit"
+            end
+            if display_search_input == 'Show full list of cryptocurrencies'
                 display_all_cryptocurrencies_names_and_ids
                 display_cryto_footer_menu
-            elsif display_search_input.downcase == 'go back'
+            elsif display_search_input == 'Go back'
                 menu
-            elsif display_search_input.downcase == 'search a crypto'
+            elsif display_search_input == 'Search a cryptocurrency'
                 display_new_crypto
-            else
-                invalid_input_try_again
+            elsif display_search_input == 'Exit'
+                exit_cli
             end
 
-        elsif input.downcase == 'exit'
+        elsif input == 'Nope! Please exit now.'
             exit_cli
-
-        else
-            invalid_input_try_again
-        end   
+        end 
     end
 
 
@@ -71,43 +80,34 @@ class FINDCRYPTO::CLI
     def display_cryto_footer_menu
         puts "\n"
         puts "Very interesting, right?"
-        puts "Would you like to see data of another cryptocurrency?"
-        puts "Please type an option from bellow:"
-        puts "|Yes|     |Exit|"
-        back_to_menu_input = gets.strip.downcase
-        if back_to_menu_input == "yes"
+        back_to_menu_input = @prompt.select("Would you like to see data of another cryptocurrency?", %w(Yes Exit))
+        if back_to_menu_input == "Yes"
             menu
-        elsif back_to_menu_input == "exit"
+        elsif back_to_menu_input == "Exit"
             exit_cli
-        else 
-            invalid_input_try_again
         end
     end
 
     def display_new_crypto    
-        puts "Please type a Cryptocurrency name or 'exit_now' to exit:"
-        input = gets.strip
-        if input.downcase == "exit_now"
-            exit_cli
-        end
+        input = @prompt.ask("Please type a Cryptocurrency name:", default: "e.g. Terra")
 
         FINDCRYPTO::Cryptocurrency.all.each.with_index(1) do |cryptocurrency, index| 
             if cryptocurrency.name.downcase == input.downcase
                 crypto_id = cryptocurrency.id
                 puts "Oops! #{cryptocurrency.name}'s price is already displayed in main menu."
-                puts "Do you want to see updated data?"
-                puts "|Yes|     |Show me old data|"
-                upadated_data_menu_input = gets.strip.downcase
-                if upadated_data_menu_input == "yes"
+                upadated_data_menu_input = @prompt.select("Do you want to see updated data?") do |menu|
+                    menu.choice "Yes"
+                    menu.choice "No. I love old news! Show me old data!"
+                end
+                #upadated_data_menu_input = gets.strip.downcase
+                if upadated_data_menu_input == "Yes"
                     FINDCRYPTO::API.new.get_data_from_new_crypto(crypto_id)
                     number = FINDCRYPTO::Cryptocurrency.all.count
                     display_crypto(number)
                     display_cryto_footer_menu
-                elsif upadated_data_menu_input == "show me old data"
+                else upadated_data_menu_input == "No. I love old news! Show me old data!"
                     display_crypto(index)
                     display_cryto_footer_menu
-                else 
-                    invalid_input_try_again
                 end
             end
         end
@@ -124,8 +124,7 @@ class FINDCRYPTO::CLI
 
         puts "Oops!"
         puts "Sorry! I just iterated over #{FINDCRYPTO::Cryptocurrency_lookup.all.count} cryptocurrencies and I couldn't find '#{input}'"
-        puts "Double check its name and try again"
-        puts "\n"
+        puts "Double check its name and try again!"
         sleep(1)
         display_new_crypto
     end
@@ -155,19 +154,6 @@ class FINDCRYPTO::CLI
         FINDCRYPTO::Cryptocurrency.all.each.with_index(1) do |cryptocurrency, index|
             puts "#{index}. #{cryptocurrency.name}              $#{cryptocurrency.current_price}                #{convert_to_local_time(cryptocurrency.last_updated)}"
         end
-        puts "-----------------------$------------------------"
-        puts "What crypto would you like more information on?"
-        puts "Please type an option from bellow:"
-        puts "|Type a number e.g. 1 for Bitcoin|     |Search more|     |Exit|"
-        #FINDCRYPTO::API.new.get_data_from_new_crypto('dash')
-    end
-
-    def display_search_option
-        puts "-----------------------$------------------------"
-        puts "Can't find your favorite crypto?"
-        #puts "There are exactly #{FINDCRYPTO::Cryptocurrency_lookup.all.count} cryptocurrencies at the time of this writing."
-        puts "Please type an option from bellow:"
-        puts "|Show full list|     |Search a crypto|     |Go back|"
     end
 
     def display_all_cryptocurrencies_names_and_ids
@@ -180,7 +166,7 @@ class FINDCRYPTO::CLI
     end
 
     private
-    def convert_to_local_time(utc_time) # convert_to_local_time(hash[0]["last_updated"])
+    def convert_to_local_time(utc_time) 
         utc_parsed = Time.parse(utc_time)
         utc_parsed.localtime
     end
