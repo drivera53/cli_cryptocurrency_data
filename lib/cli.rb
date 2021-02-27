@@ -144,25 +144,36 @@ class FINDCRYPTO::CLI
         puts "and cryptocurrency exchanges, just like buying stocks."
         puts "-----------------------$ DATA $------------------------"
         puts "*** This data is valid as #{convert_to_local_time(crypto.last_updated)} ***"
-        puts "#{crypto.symbol.upcase} price: $#{crypto.current_price}"
-        puts "Price Change 24 Hours: $#{crypto.price_change_24h} or #{sprintf('%+.2f', crypto.price_change_percentage_24h)}%" 
-        puts "Price Change  1 Hour: $#{sprintf('%.2f', ((crypto.price_change_percentage_1h_in_currency * crypto.current_price)/100))} or #{sprintf('%+.2f', crypto.price_change_percentage_1h_in_currency)}%"
-        puts "24 Hour High: $#{crypto.high_24h}       24 Hour Low: $#{crypto.low_24h}"
-        puts "Trading Volume 24 Hours: $#{crypto.total_volume}"
-        puts "Market Cap: $#{crypto.market_cap}       Market Cap Rank: ##{crypto.market_cap_rank}"
-        puts "Circulating Supply: $#{crypto.circulating_supply}"
+        coin_symbol_and_price = crypto.symbol.upcase + " price:"
+        puts "#{coin_symbol_and_price.ljust(25)} $#{crypto.current_price}"
+        pc24h = "Price Change 24 Hours:"
+        puts "#{pc24h.ljust(25)} $#{crypto.price_change_24h} or #{sprintf('%+.2f', crypto.price_change_percentage_24h)}%"
+        pc1h = "Price Change  1 Hour:"
+        puts "#{pc1h.ljust(25)} $#{sprintf('%.2f', ((crypto.price_change_percentage_1h_in_currency * crypto.current_price)/100))} or #{sprintf('%+.2f', crypto.price_change_percentage_1h_in_currency)}%"
+        hh24 = "24 Hour High:"
+        puts "#{hh24.ljust(25)} $#{crypto.high_24h}"
+        hl24 = "24 Hour Low:"
+        puts "#{hl24.ljust(25)} $#{crypto.low_24h}"
+        tv24 = "Trading Volume 24 Hours:"
+        puts "#{tv24.ljust(25)} $#{crypto.total_volume}"
+        mc = "Market Cap:"
+        puts "#{mc.ljust(25)} $#{crypto.market_cap}"       
+        mcr = "Market Cap Rank:"
+        puts "#{mcr.ljust(25)} ##{crypto.market_cap_rank}"
+        cs = "Circulating Supply:"
+        puts "#{cs.ljust(25)} $#{crypto.circulating_supply}"
         #puts "Logo link: #{crypto.image}"
         puts "-----------------------$------------------------"
         puts "Showing you #{crypto.name}'s logo in your browser!"
-        puts "It's not Malware don't get scared"
         sleep(1)
         Launchy.open(crypto.image)
     end
 
     def display_top_20_cryptocurrencies
-        puts "#  COIN:                   PRICE:             DATE:"
+        dot = '.'
+        puts "#   COIN:                PRICE:                DATE:"
         FINDCRYPTO::Cryptocurrency.all.each.with_index(1) do |cryptocurrency, index|
-            puts "#{index}. #{cryptocurrency.name}              $#{cryptocurrency.current_price}                #{convert_to_local_time(cryptocurrency.last_updated)}"
+            puts "#{index.to_s.ljust(3)} #{cryptocurrency.name.ljust(20)} $#{cryptocurrency.current_price.to_s.ljust(20)} #{convert_to_local_time(cryptocurrency.last_updated)}"
         end
     end
 
