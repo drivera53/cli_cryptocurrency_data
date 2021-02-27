@@ -1,9 +1,10 @@
 class FINDCRYPTO::CLI
     def initialize
         puts "\n"
-        puts "-----------------------$------------------------"
-        puts "  Crypto Is Everywhere, But Should You Invest?  "
-        puts "-----------------------$------------------------"
+        puts "--------------------------------$--------------------------------"
+        crypt_is_everywhere = "Crypto Is Everywhere, But Should You Invest?"
+        puts "           #{crypt_is_everywhere.colorize(:green)}          "
+        puts "--------------------------------$--------------------------------"
         puts "\n"
         FINDCRYPTO::API.new.get_top_20_cryptocurrencies 
         FINDCRYPTO::API.new.get_all_cryptocurrencies_names_and_ids
@@ -20,14 +21,16 @@ class FINDCRYPTO::CLI
         puts "Some experts have suggested that Bitcoin could be worth as much as $100,000 one day!"
         puts "But, not everyone thinks investing in cryptocurrency is a good idea."
         puts "Check the following valuable data and make your own conclusions:"
+        puts "\n"
     end
 
     def menu
-        puts "-----------------------$------------------------"
-        puts "  Top 20 Cryptocurrency Prices by Market Cap:   "
-        puts "-----------------------$------------------------"
+        puts "--------------------------------$--------------------------------"
+        top_20_crypt_prices = "Top 20 Cryptocurrency Prices by Market Cap:"
+        puts "            #{top_20_crypt_prices.colorize(:green)}          "
+        puts "--------------------------------$--------------------------------"
         display_top_20_cryptocurrencies
-        puts "-----------------------$------------------------"
+        puts "--------------------------------$--------------------------------"
         input = @prompt.select("Would you like more information?") do |menu|
             menu.choice "Yes, let me choose a cryptocurrency from the list above"
             menu.choice "Yes, but let me search for a different cryptocurrency"
@@ -137,49 +140,55 @@ class FINDCRYPTO::CLI
     end
 
     def display_crypto(number)
+        dollar_sign = '$'
         index_number = number -1
         crypto = FINDCRYPTO::Cryptocurrency.all[index_number]
-        puts "--------------------$ #{crypto.name.upcase} $--------------------"
+        bar_left = "--------------------$"
+        bar_right = "$--------------------"
+        puts "#{bar_left.ljust(24)} #{crypto.name.upcase.ljust(10).colorize(:green)} #{bar_right}"
         puts "#{crypto.name}(#{crypto.symbol.upcase}) can be purchased on peer-to-peer networks"
         puts "and cryptocurrency exchanges, just like buying stocks."
-        puts "-----------------------$ DATA $------------------------"
+        puts "-----------------------$ DATA $-----------------------"
         puts "*** This data is valid as #{convert_to_local_time(crypto.last_updated)} ***"
-        coin_symbol_and_price = crypto.symbol.upcase + " price:"
-        puts "#{coin_symbol_and_price.ljust(25)} $#{crypto.current_price}"
+        coin_symbol_and_price = crypto.symbol.upcase + " price:"                  
+        puts "#{coin_symbol_and_price.ljust(25)} #{dollar_sign.colorize(:green)}#{crypto.current_price.to_s.colorize(:green)}"
         pc24h = "Price Change 24 Hours:"
-        puts "#{pc24h.ljust(25)} $#{crypto.price_change_24h} or #{sprintf('%+.2f', crypto.price_change_percentage_24h)}%"
+        puts "#{pc24h.ljust(25)} #{dollar_sign.colorize(:green)}#{crypto.price_change_24h.to_s.colorize(:green)} or #{sprintf('%+.2f', crypto.price_change_percentage_24h)}%"
         pc1h = "Price Change  1 Hour:"
-        puts "#{pc1h.ljust(25)} $#{sprintf('%.2f', ((crypto.price_change_percentage_1h_in_currency * crypto.current_price)/100))} or #{sprintf('%+.2f', crypto.price_change_percentage_1h_in_currency)}%"
+        puts "#{pc1h.ljust(25)} #{dollar_sign.colorize(:green)}#{sprintf('%.2f', ((crypto.price_change_percentage_1h_in_currency * crypto.current_price)/100)).to_s.colorize(:green)} or #{sprintf('%+.2f', crypto.price_change_percentage_1h_in_currency)}%"
         hh24 = "24 Hour High:"
-        puts "#{hh24.ljust(25)} $#{crypto.high_24h}"
+        puts "#{hh24.ljust(25)} #{dollar_sign.colorize(:green)}#{crypto.high_24h.to_s.colorize(:green)}"
         hl24 = "24 Hour Low:"
-        puts "#{hl24.ljust(25)} $#{crypto.low_24h}"
+        puts "#{hl24.ljust(25)} #{dollar_sign.colorize(:green)}#{crypto.low_24h.to_s.colorize(:green)}"
         tv24 = "Trading Volume 24 Hours:"
-        puts "#{tv24.ljust(25)} $#{crypto.total_volume}"
+        puts "#{tv24.ljust(25)} #{dollar_sign.colorize(:green)}#{crypto.total_volume.to_s.colorize(:green)}"
         mc = "Market Cap:"
-        puts "#{mc.ljust(25)} $#{crypto.market_cap}"       
+        puts "#{mc.ljust(25)} #{dollar_sign.colorize(:green)}#{crypto.market_cap.to_s.colorize(:green)}"       
         mcr = "Market Cap Rank:"
-        puts "#{mcr.ljust(25)} ##{crypto.market_cap_rank}"
+        hash_sign = '#'
+        puts "#{mcr.ljust(25)} #{hash_sign.colorize(:green)}#{crypto.market_cap_rank.to_s.colorize(:green)}"
         cs = "Circulating Supply:"
-        puts "#{cs.ljust(25)} $#{crypto.circulating_supply}"
+        puts "#{cs.ljust(25)} #{dollar_sign.colorize(:green)}#{crypto.circulating_supply.to_s.colorize(:green)}"
         #puts "Logo link: #{crypto.image}"
-        puts "-----------------------$------------------------"
+        puts "--------------------------$---------------------------"
         puts "Showing you #{crypto.name}'s logo in your browser!"
         sleep(1)
         Launchy.open(crypto.image)
     end
 
     def display_top_20_cryptocurrencies
+        dollar_sign = '$'
         dot = '.'
-        puts "#   COIN:                PRICE:                DATE:"
+        price_string = 'PRICE:'
+        puts "#   COIN:                #{price_string.colorize(:green)}              DATE:"
         FINDCRYPTO::Cryptocurrency.all.each.with_index(1) do |cryptocurrency, index|
-            puts "#{index.to_s.ljust(3)} #{cryptocurrency.name.ljust(20)} $#{cryptocurrency.current_price.to_s.ljust(20)} #{convert_to_local_time(cryptocurrency.last_updated)}"
+            puts "#{index.to_s.ljust(3)} #{cryptocurrency.name.ljust(20)} #{dollar_sign.colorize(:green)}#{cryptocurrency.current_price.to_s.ljust(18).colorize(:green)} #{convert_to_local_time(cryptocurrency.last_updated)}"
         end
     end
 
     def display_all_cryptocurrencies_names_and_ids
         puts "***This is a LOOOOOOOOOONG list! I'm warning you!***"
-        sleep(1.5)
+        sleep(1)
         puts "#  COIN:"
         FINDCRYPTO::Cryptocurrency_lookup.all.each.with_index(1) do |cryptocurrency, index|
             puts "#{index}. #{cryptocurrency.name}(#{cryptocurrency.symbol.upcase})"
