@@ -43,4 +43,4 @@ class FINDCRYPTO::API
 
 end
 
-# FINDCRYPTO::Cryptocurrency.all.first.name == "Bitcoin"
+# CoinGecko rocks! https://www.coingecko.com/en
